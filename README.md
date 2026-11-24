@@ -75,6 +75,8 @@ business/
     └── product.types.ts
 
 fixtures/
+├── messages.json
+├── testData.json
 └── testFixtures.ts
 
 tests/

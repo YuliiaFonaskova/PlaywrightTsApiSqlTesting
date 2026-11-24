@@ -1,0 +1,13 @@
+{
+  "products": {
+    "notFound": "Requested item not found"
+  },
+  "auth": {
+    "unauthorized": "Unauthorized",
+    "tokenType": "bearer"
+  },
+  "cart": {
+    "itemAddedOrUpdated": "item added or updated",
+    "notFound": "Resource not found"
+  }
+}

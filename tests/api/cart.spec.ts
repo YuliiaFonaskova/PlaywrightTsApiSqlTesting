@@ -1,5 +1,7 @@
 import { expectStatus } from "../../core/apiHelpers";
 import type { ProductService } from "../../business/services/ProductService";
+import messages from "../../fixtures/messages.json";
+import testData from "../../fixtures/testData.json";
 import { expect, test } from "../../fixtures/testFixtures";
 
 async function getFirstInStockProductId(
@@ -25,7 +27,7 @@ test.describe("Cart API", () => {
       product_id: productId,
       quantity: 1,
     });
-    expect(addResponse.result).toBe("item added or updated");
+    expect(addResponse.result).toBe(messages.cart.itemAddedOrUpdated);
 
     const details = await cartService.getCart(cartId);
     expect(details.cart_items).toHaveLength(1);
@@ -38,12 +40,12 @@ test.describe("Cart API", () => {
     cartService,
   }) => {
     const response = await cartService.addItemResponse(cartId, {
-      product_id: "non-existent-id",
+      product_id: testData.invalidProductId,
       quantity: 1,
     });
     await expectStatus("POST", response, 404);
     const body = (await response.json()) as { message: string };
-    expect(body.message).toBe("Resource not found");
+    expect(body.message).toBe(messages.cart.notFound);
   });
 
   test("PUT and DELETE cart endpoints update quantity and remove item", async ({
