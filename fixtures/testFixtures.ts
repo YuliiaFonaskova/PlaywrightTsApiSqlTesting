@@ -2,12 +2,14 @@ import { test as base, expect } from "@playwright/test";
 import { AuthService } from "../business/services/AuthService";
 import { CartService } from "../business/services/CartService";
 import { ProductService } from "../business/services/ProductService";
+import { getTestUserCredentials } from "../core/testData";
 
 type TestFixtures = {
   productService: ProductService;
   authService: AuthService;
   cartService: CartService;
   authToken: string;
+  cartId: string;
 };
 
 const test = base.extend<TestFixtures>({
@@ -24,13 +26,16 @@ const test = base.extend<TestFixtures>({
     await use(service);
   },
   authToken: async ({ authService }, use) => {
-    const email = process.env.USER_EMAIL;
-    const password = process.env.USER_PASSWORD;
-    if (!email || !password) {
-      throw new Error("USER_EMAIL and USER_PASSWORD must be set in .env");
-    }
-    const loginResponse = await authService.login({ email, password });
+    const loginResponse = await authService.login(getTestUserCredentials());
     await use(loginResponse.access_token);
+  },
+  cartId: async ({ cartService }, use) => {
+    const cart = await cartService.createCart();
+    try {
+      await use(cart.id);
+    } finally {
+      await cartService.deleteCart(cart.id);
+    }
   },
 });
 

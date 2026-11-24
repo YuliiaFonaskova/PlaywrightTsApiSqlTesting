@@ -23,7 +23,7 @@ The project follows a layered architecture:
 
 ## Test Scenarios & Coverage Matrix
 
-**Coverage Summary:** **2** automated API test scenarios across **2** functional suites.
+**Coverage Summary:** **11** automated API test scenarios across **4** functional suites.
 
 Detailed test cases, preconditions, and step-by-step actions are documented in [docs/test-cases.md](docs/test-cases.md).
 
@@ -36,6 +36,21 @@ Format: **ID** · Priority · Status — Title
 #### Products (`tests/api/products.spec.ts`)
 
 - **PROD-01** · P1 · Automated — Get products list returns non-empty catalog
+- **PROD-02** · P1 · Automated — Get product by ID from catalog returns matching item
+- **PROD-03** · P2 · Automated — Get product with non-existent ID returns 404
+
+#### Auth (`tests/api/auth.spec.ts`)
+
+- **AUTH-01** · P1 · Automated — Valid user login returns JWT access token
+- **AUTH-02** · P1 · Automated — Get current user profile with valid token
+- **AUTH-03** · P1 · Automated — Login with invalid password returns 401
+- **AUTH-04** · P2 · Automated — Get current user profile without token returns 401
+
+#### Cart (`tests/api/cart.spec.ts`)
+
+- **CART-01** · P1 · Automated — Create cart and add in-stock product
+- **CART-02** · P2 · Automated — Add non-existent product to cart returns 404
+- **CART-03** · P2 · Automated — Update cart item quantity and remove item
 
 ---
 
@@ -64,6 +79,8 @@ fixtures/
 
 tests/
 └── api/
+    ├── auth.spec.ts
+    ├── cart.spec.ts
     ├── health.spec.ts
     └── products.spec.ts
 
@@ -109,7 +126,7 @@ docker compose exec -T api php artisan migrate:fresh --seed --force
 | Action                       | Command                                          |
 | :--------------------------- | :----------------------------------------------- |
 | Run all tests                | `npm test`                                       |
-| Run API project tests        | `npx playwright test --project=api`              |
+| Run API project tests        | `npm run test:api`                               |
 | Run single spec              | `npx playwright test tests/api/products.spec.ts` |
 | Open HTML report             | `npx playwright show-report`                     |
 | Run typecheck, lint & format | `npm run check`                                  |

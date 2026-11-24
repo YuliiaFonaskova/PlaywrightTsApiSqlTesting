@@ -1,3 +1,4 @@
+import { expectStatus } from "../../core/apiHelpers";
 import { expect, test } from "../../fixtures/testFixtures";
 
 test.describe("Products API", () => {
@@ -5,5 +6,26 @@ test.describe("Products API", () => {
     const result = await productService.getProducts();
     expect(result.total).toBeGreaterThan(0);
     expect(result.data.length).toBeGreaterThan(0);
+  });
+
+  test("GET /products/:id returns matching product", async ({
+    productService,
+  }) => {
+    const list = await productService.getProducts();
+    const firstProduct = list.data[0];
+
+    const product = await productService.getProductById(firstProduct.id);
+    expect(product.id).toBe(firstProduct.id);
+    expect(product.name).toBe(firstProduct.name);
+  });
+
+  test("GET /products/:id returns 404 for non-existent id", async ({
+    productService,
+  }) => {
+    const response =
+      await productService.getProductByIdResponse("non-existent-id");
+    await expectStatus("GET", response, 404);
+    const body = (await response.json()) as { message: string };
+    expect(body.message).toBe("Requested item not found");
   });
 });

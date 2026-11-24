@@ -10,3 +10,15 @@ export interface AddToCartRequest {
 export interface AddToCartResponse {
   result: string;
 }
+
+export interface CartItem {
+  id: string;
+  quantity: number;
+  cart_id: string;
+  product_id: string;
+}
+
+export interface CartDetails {
+  id: string;
+  cart_items: CartItem[];
+}

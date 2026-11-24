@@ -8,3 +8,10 @@ export interface LoginResponse {
   token_type: string;
   expires_in: number;
 }
+
+export interface UserProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
