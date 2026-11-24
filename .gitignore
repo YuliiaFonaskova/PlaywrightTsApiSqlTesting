@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment variables (local secrets)
+.env
+
+# Build output
+dist/
+
+# Playwright artifacts and auth state
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+playwright/.auth/
+
+docs/
