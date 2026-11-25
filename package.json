@@ -1,7 +1,7 @@
 {
   "name": "playwrighttsapisqltesting",
   "version": "1.0.0",
-  "description": "End-to-end API, UI &amp; MariaDB SQL test automation framework built with Playwright, TypeScript, Zod, Docker, and GitHub Actions.",
+  "description": "API test automation framework built with Playwright, TypeScript, and Docker.",
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -28,5 +28,8 @@
     "prettier": "^3.10.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.73.0"
+  },
+  "prettier": {
+    "endOfLine": "auto"
   }
 }

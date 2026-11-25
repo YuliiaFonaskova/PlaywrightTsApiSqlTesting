@@ -1,10 +1,10 @@
 # PlaywrightTsApiSqlTesting
 
-Type-safe API, UI & MariaDB SQL test automation framework built with Playwright and TypeScript for the local **Practice Software Testing (Toolshop)** Docker stack.
+Type-safe API test automation framework built with Playwright and TypeScript for the local **Practice Software Testing (Toolshop)** Docker stack.
 
 The project follows a layered architecture:
 
-- **Core layer** — reusable utilities independent of business logic (diagnostic API helper, unique test data generator).
+- **Core layer** — reusable utilities independent of business logic (diagnostic API helper, environment credentials loader).
 - **Business layer** — TypeScript API contracts (`types/`) and typed API service classes (`services/`).
 - **Fixtures layer** — Playwright Custom Fixtures (`test.extend`) providing ready-to-use services and auth token.
 - **Tests layer** — automated API test specs and Playwright configuration.

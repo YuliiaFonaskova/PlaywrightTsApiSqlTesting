@@ -1,6 +1,6 @@
 # Test Cases & Coverage Matrix
 
-This document contains test cases for the **Practice Software Testing (Toolshop)** local Docker stack (`API + MariaDB SQL + UI`), along with the current test coverage.
+This document contains API test cases for the **Practice Software Testing (Toolshop)** local Docker stack, along with the current test coverage.
 
 ---
 
