@@ -100,8 +100,8 @@ tsconfig.json
 
 - Strict TypeScript type checking (`tsc --noEmit`)
 - API testing via Playwright `APIRequestContext` with diagnostic error reporting (`expectStatus`)
-- Custom Playwright Fixtures (`test.extend`) for services and authenticated token injection
-- Separate `api` and `e2e` projects in `playwright.config.ts`
+- Custom Playwright Fixtures (`test.extend`) for services, auth token injection, and automatic `cartId` teardown
+- Dedicated `api` project configured in `playwright.config.ts`
 - Test configuration via environment variables in `.env`
 - Code quality gates via ESLint and Prettier (`npm run check`)
 - Trace capture on first retry (`on-first-retry`) and HTML test report

@@ -23,12 +23,5 @@ export default defineConfig({
         baseURL: process.env.API_BASE_URL ?? "http://localhost:8091",
       },
     },
-    {
-      name: "e2e",
-      testMatch: "**/e2e/**/*.spec.ts",
-      use: {
-        baseURL: process.env.UI_BASE_URL ?? "http://localhost:4200",
-      },
-    },
   ],
 });

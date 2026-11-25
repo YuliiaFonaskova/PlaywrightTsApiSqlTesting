@@ -176,80 +176,6 @@ This document contains API test cases for the **Practice Software Testing (Tools
 
 ---
 
-### Suite: Auth (AUTH)
-
-#### AUTH-01: Valid user login returns JWT access token
-
-- **Priority:** P1
-- **Type:** Positive / API
-- **Automation Status:** Automated (`tests/api/auth.spec.ts`)
-- **Preconditions:** Seeded user credentials are configured in `.env`.
-
-**Steps:**
-
-| #   | Action                                                                    | Expected result                                                         |
-| :-- | :------------------------------------------------------------------------ | :---------------------------------------------------------------------- |
-| 1   | Call `authService.login(getTestUserCredentials())` (`POST /users/login`). | Response returns HTTP `200` verified by `expectStatus`.                 |
-| 2   | Verify `access_token`, `token_type`, and `expires_in` in the response.    | `access_token` is truthy, `token_type` is `"bearer"`, `expires_in > 0`. |
-
-**Expected result:** Valid user credentials authenticate successfully and return a bearer token.
-
----
-
-#### AUTH-02: Get current user profile with valid token
-
-- **Priority:** P1
-- **Type:** Positive / API
-- **Automation Status:** Automated (`tests/api/auth.spec.ts`)
-- **Preconditions:** Valid `authToken` fixture is injected.
-
-**Steps:**
-
-| #   | Action                                                       | Expected result                                                 |
-| :-- | :----------------------------------------------------------- | :-------------------------------------------------------------- |
-| 1   | Call `authService.getMe(authToken)` (`GET /users/me`).       | Response returns HTTP `200` verified by `expectStatus`.         |
-| 2   | Verify `id` and `email` in the returned user profile object. | `profile.id` is truthy and `profile.email` matches `.env` user. |
-
-**Expected result:** Authenticated user profile is returned for the active token.
-
----
-
-#### AUTH-03: Login with invalid password returns 401
-
-- **Priority:** P1
-- **Type:** Negative / API
-- **Automation Status:** Automated (`tests/api/auth.spec.ts`)
-- **Preconditions:** Valid user email is configured in `.env`.
-
-**Steps:**
-
-| #   | Action                                                                   | Expected result                                         |
-| :-- | :----------------------------------------------------------------------- | :------------------------------------------------------ |
-| 1   | Call `authService.loginResponse({ email, password: "wrong-password" })`. | Response returns HTTP `401` verified by `expectStatus`. |
-| 2   | Parse the JSON error payload and verify the `error` field.               | `body.error` equals `"Unauthorized"`.                   |
-
-**Expected result:** Server rejects invalid password with HTTP `401` and `"Unauthorized"`.
-
----
-
-#### AUTH-04: Get current user profile without token returns 401
-
-- **Priority:** P2
-- **Type:** Negative / API
-- **Automation Status:** Automated (`tests/api/auth.spec.ts`)
-- **Preconditions:** Local Docker stack is running.
-
-**Steps:**
-
-| #   | Action                                                       | Expected result                                         |
-| :-- | :----------------------------------------------------------- | :------------------------------------------------------ |
-| 1   | Call `authService.getMeResponse()` without `Authorization`.  | Response returns HTTP `401` verified by `expectStatus`. |
-| 2   | Parse the JSON error payload and verify the `message` field. | `body.message` equals `"Unauthorized"`.                 |
-
-**Expected result:** Protected endpoint rejects unauthenticated requests with HTTP `401`.
-
----
-
 ### Suite: Cart (CART)
 
 #### CART-01: Create cart and add in-stock product
@@ -257,17 +183,17 @@ This document contains API test cases for the **Practice Software Testing (Tools
 - **Priority:** P1
 - **Type:** Positive / Chaining
 - **Automation Status:** Automated (`tests/api/cart.spec.ts`)
-- **Preconditions:** Local Docker stack is running and catalog has at least one in-stock product.
+- **Preconditions:** Local Docker stack is running, catalog has at least one in-stock product, and `cartId` fixture provides an isolated cart.
 
 **Steps:**
 
-| #   | Action                                                                    | Expected result                                                 |
-| :-- | :------------------------------------------------------------------------ | :-------------------------------------------------------------- |
-| 1   | Create an empty cart via `cartService.createCart()` (`POST /carts`).      | Response returns HTTP `201` with a new cart `id`.               |
-| 2   | Add an in-stock product via `cartService.addItem(cart.id, ...)`.          | Response returns HTTP `200` and `"item added or updated"`.      |
-| 3   | Fetch cart via `cartService.getCart(cart.id)` and delete cart in cleanup. | Cart contains `1` item matching `product_id` and `quantity: 1`. |
+| #   | Action                                                                           | Expected result                                                 |
+| :-- | :------------------------------------------------------------------------------- | :-------------------------------------------------------------- |
+| 1   | Request `cartId` fixture (`POST /carts`) and look up an in-stock product.        | Empty cart is created (`201`) and in-stock `productId` is read. |
+| 2   | Add the product via `cartService.addItem(cartId, ...)`.                          | Response returns HTTP `200` and `"item added or updated"`.      |
+| 3   | Fetch cart via `cartService.getCart(cartId)` (fixture deletes cart in teardown). | Cart contains `1` item matching `productId` and `quantity: 1`.  |
 
-**Expected result:** Product is added to the newly created cart and verified via `GET /carts/:id`.
+**Expected result:** Product is added to the newly created cart, verified via `GET /carts/:id`, and cleaned up by the `cartId` fixture.
 
 ---
 
@@ -276,15 +202,15 @@ This document contains API test cases for the **Practice Software Testing (Tools
 - **Priority:** P2
 - **Type:** Negative / API
 - **Automation Status:** Automated (`tests/api/cart.spec.ts`)
-- **Preconditions:** Local Docker stack is running.
+- **Preconditions:** Local Docker stack is running and `cartId` fixture provides an isolated cart.
 
 **Steps:**
 
-| #   | Action                                                                               | Expected result                                         |
-| :-- | :----------------------------------------------------------------------------------- | :------------------------------------------------------ |
-| 1   | Create an empty cart via `cartService.createCart()`.                                 | New cart `id` is returned.                              |
-| 2   | Call `cartService.addItemResponse(cart.id, { product_id: "non-existent-id", ... })`. | Response returns HTTP `404` and `"Resource not found"`. |
-| 3   | Delete test cart in `finally` cleanup.                                               | Cart is removed (`204`).                                |
+| #   | Action                                                                                      | Expected result                                         |
+| :-- | :------------------------------------------------------------------------------------------ | :------------------------------------------------------ |
+| 1   | Inject `cartId` from `testFixtures` (`POST /carts` creates cart).                           | New cart `id` is ready.                                 |
+| 2   | Call `cartService.addItemResponse(cartId, { product_id: testData.invalidProductId, ... })`. | Response returns HTTP `404` and `"Resource not found"`. |
+| 3   | Test completes and `cartId` fixture deletes the cart in `finally` teardown.                 | Cart is removed (`204`).                                |
 
 **Expected result:** API rejects unknown product ID with HTTP `404` and `"Resource not found"`.
 
@@ -295,14 +221,14 @@ This document contains API test cases for the **Practice Software Testing (Tools
 - **Priority:** P2
 - **Type:** Chaining / CRUD
 - **Automation Status:** Automated (`tests/api/cart.spec.ts`)
-- **Preconditions:** Local Docker stack is running and catalog has an in-stock product.
+- **Preconditions:** Local Docker stack is running, catalog has an in-stock product, and `cartId` fixture provides an isolated cart.
 
 **Steps:**
 
-| #   | Action                                                                          | Expected result                                               |
-| :-- | :------------------------------------------------------------------------------ | :------------------------------------------------------------ |
-| 1   | Create a cart and add an in-stock product with `quantity: 1`.                   | Item is added (`200`).                                        |
-| 2   | Update quantity to `3` via `cartService.updateItemQuantity(...)`.               | `GET /carts/:id` shows `quantity: 3`.                         |
-| 3   | Remove item via `cartService.removeItem(cart.id, productId)` and clean up cart. | `DELETE` returns `204` and `cart_items` becomes empty (`[]`). |
+| #   | Action                                                                                   | Expected result                                               |
+| :-- | :--------------------------------------------------------------------------------------- | :------------------------------------------------------------ |
+| 1   | Inject `cartId` and add an in-stock product with `quantity: 1`.                          | Item is added (`200`).                                        |
+| 2   | Update quantity to `3` via `cartService.updateItemQuantity(...)`.                        | `GET /carts/:id` shows `quantity: 3`.                         |
+| 3   | Remove item via `cartService.removeItem(cartId, productId)` (`cartId` deletes the cart). | `DELETE` returns `204` and `cart_items` becomes empty (`[]`). |
 
 **Expected result:** Cart item supports full create → read → update → delete lifecycle via API.
