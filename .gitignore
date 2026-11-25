@@ -16,3 +16,6 @@ playwright/.auth/
 
 docs/*
 !docs/test-cases.md
+
+# Local AI mentor instructions
+GEMINI.md

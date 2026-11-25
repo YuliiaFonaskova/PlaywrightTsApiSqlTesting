@@ -1,4 +1,4 @@
-# PlaywrightTsApiTesting
+# PlaywrightTsApiSqlTesting
 
 Type-safe API test automation framework built with Playwright and TypeScript for the local **Practice Software Testing (Toolshop)** Docker stack.
 
